@@ -28,15 +28,15 @@ LOSS_WEIGHTS = {
 }
 
 TRAINING_USE_EMA = True
-SKIP_CONNECTION = False
 RESUME_CHECKPOINT = None
 
 # ===================================================================
 # StyleCycleGAN Inference Settings
 # ===================================================================
 INFERENCE_INPUT_DIR = './experiments/plant_village_raw/synthetic_target/Tomato_healthy'
-INFERENCE_CHECKPOINT_DIR = './stylecyclegan/results/exp7_nblock9_lrg2e4_lrd1e4_gan1_cycle10_identity5_style1_content1/checkpoints/epoch_140'
-INFERENCE_OUTPUT_DIR = './stylecyclegan/output/style_mode_exp7/noise'
+INFERENCE_TARGET_DIR = './stylecyclegan/dataset/images_c'
+INFERENCE_CHECKPOINT_DIR = './stylecyclegan/results/the_first_test/checkpoints/epoch_180'
+INFERENCE_OUTPUT_DIR = './stylecyclegan/output/test/interpolate'
 INFERENCE_DIRECTION = 'AtoB'
 
 INFERENCE_USE_EMA = True
@@ -52,7 +52,7 @@ INFERENCE_STYLE_DIM = 256
 # Style Extracting Mode
 # choices=['average', 'random', 'interpolate', 'noise']
 # ===================================================================
-INFERENCE_STYLE_MODE = 'noise'
+INFERENCE_STYLE_MODE = 'interpolate'
 INFERENCE_NOISE_LEVEL = 0.1
 
 # ===================================================================

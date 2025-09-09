@@ -50,8 +50,7 @@ def main(cfg):
         total_epochs=cfg.epochs,
         lr_g=cfg.lr_g,
         lr_d=cfg.lr_d,
-        loss_weights=cfg.LOSS_WEIGHTS,
-        skip_connection=cfg.skip_connection
+        loss_weights=cfg.LOSS_WEIGHTS
     )
 
     # --- Resume Training ---
@@ -98,7 +97,6 @@ if __name__ == "__main__":
     parser.add_argument('--lr_d', type=float, default=default_config.LEARNING_RATE_D)
     parser.add_argument('--loss_weights', type=str, default=json.dumps(default_config.LOSS_WEIGHTS), help='Loss weights as a JSON string.')
     parser.add_argument('--use_ema', type=bool, default=default_config.TRAINING_USE_EMA, help='Use EMA models for saving samples during training.')
-    parser.add_argument('--skip_connection', type=bool, default=default_config.SKIP_CONNECTION, help='Use weak skip connection in the generator.')
 
     # --- W&B Logging ---
     parser.add_argument('--wandb', action='store_true', help='Enable Weights & Biases logging.')

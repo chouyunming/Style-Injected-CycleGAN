@@ -22,13 +22,12 @@ class StyleCycleGAN:
     This class brings together the models, optimizers, and loss functions
     and defines the core training step and model saving/loading logic.
     """
-    def __init__(self, device, total_epochs, lr_g, lr_d, loss_weights, skip_connection=False):
-        print(f"Skip connection enabled: {skip_connection}")
+    def __init__(self, device, total_epochs, lr_g, lr_d, loss_weights):
         self.device = device
 
         # --- Instantiate Models ---
-        self.G_A2B = StyleCycleGANGenerator(skip_connection=skip_connection).to(device)
-        self.G_B2A = StyleCycleGANGenerator(skip_connection=skip_connection).to(device)
+        self.G_A2B = StyleCycleGANGenerator().to(device)
+        self.G_B2A = StyleCycleGANGenerator().to(device)
         self.SE_A = StyleEncoder().to(device)
         self.SE_B = StyleEncoder().to(device)
         self.D_A = ImprovedDiscriminator().to(device)
