@@ -91,3 +91,8 @@ Thumbs.db
 # Conda
 .conda/
 EOF
+
+echo "" >> .gitignore
+echo "# Allow specific dataset directory for StyleCycleGAN" >> .gitignore
+echo "!dataset/" >> .gitignore
+echo "!dataset/**" >> .gitignore
