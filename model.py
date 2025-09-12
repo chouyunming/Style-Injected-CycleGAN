@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 import config as default_config
 
@@ -52,35 +51,6 @@ class ResidualBlockWithAdaIN(nn.Module):
         out = self.adain2(self.conv2(out), style_code)
         return out + residual
 
-class StyleInjectionBlock(nn.Module):
-    """
-    A block that performs upsampling followed by style injection.
-    This allows style control at multiple resolutions, similar to StyleGAN.
-    """
-    def __init__(self, in_channels, out_channels, style_dim, style_weight=1.0, upsample=True):
-        super().__init__()
-        if upsample:
-            self.upsample = nn.ConvTranspose2d(in_channels, out_channels, 4, 2, 1)
-        else:
-            self.upsample = nn.Conv2d(in_channels, out_channels, 3, 1, 1)
-        
-        self.adain = AdaIN(out_channels, style_dim)
-        self.style_weight = style_weight
-        self.activation = nn.ReLU(inplace=True)
-        
-    def forward(self, x, style_code):
-        x = self.upsample(x)
-        
-        if self.style_weight < 1.0:
-            original_x = x
-            styled_x = self.adain(x, style_code)
-            x = (1 - self.style_weight) * original_x + self.style_weight * styled_x
-        else:
-            x = self.adain(x, style_code)
-            
-        x = self.activation(x)
-        return x
-
 # ######################################################################
 # ###################  Main Network Architectures ######################
 # ######################################################################
@@ -109,11 +79,9 @@ class StyleCycleGANGenerator(nn.Module):
     """
     The main generator network for StyleCycleGAN.
     It separates content and style, encoding the content and then injecting
-    the style via AdaIN residual blocks in the decoder at multiple resolutions.
+    the style via AdaIN residual blocks in the decoder.
     """
-    def __init__(self, in_channels=3, out_channels=3, style_dim=256, 
-                 n_residual_blocks=default_config.N_RESIDUAL_BLOCKS,
-                 skip_connection=default_config.SKIP_CONNECTION):
+    def __init__(self, in_channels=3, out_channels=3, style_dim=256, n_residual_blocks=default_config.N_RESIDUAL_BLOCKS):
         super().__init__()
         # Content Encoder: Extracts style-invariant content features
         self.content_encoder = nn.Sequential(
@@ -122,59 +90,21 @@ class StyleCycleGANGenerator(nn.Module):
             nn.Conv2d(128, 256, 4, 2, 1), nn.InstanceNorm2d(256), nn.ReLU(inplace=True)
         )
         
-        self.skip_connection = skip_connection
-        if self.skip_connection:
-            self.skip_conv = nn.Conv2d(in_channels, out_channels, kernel_size=1)
-            self.skip_alpha = nn.Parameter(torch.tensor(0.1))
-
-        self.n_residual_blocks = n_residual_blocks
-
         # Decoder: Synthesizes an image from content features and a style code
-        # Multi-resolution style injection for better style control
-        decoder_blocks = []
-        
-        # Bottleneck: Apply residual blocks with AdaIN at 64×64 resolution
-        # This controls the overall style and coarse features
-        for _ in range(n_residual_blocks):
-            decoder_blocks.append(ResidualBlockWithAdaIN(256, style_dim))
-        
-        # Multi-resolution upsampling with style injection at each level
-        # 64×64 -> 128×128: Controls mid-level style features
-        decoder_blocks.append(StyleInjectionBlock(256, 128, style_dim, style_weight=0.7, upsample=True))
-        
-        # 128×128 -> 256×256: Controls fine-grained style details
-        decoder_blocks.append(StyleInjectionBlock(128, 64, style_dim, style_weight=0.3, upsample=True))
-        
-        # Final output layer without style injection to preserve final details
+        decoder_blocks = [ResidualBlockWithAdaIN(256, style_dim) for _ in range(n_residual_blocks)]
         decoder_blocks.extend([
-            nn.Conv2d(64, out_channels, 7, 1, 3, padding_mode='reflect'), 
-            nn.Tanh()
+            nn.ConvTranspose2d(256, 128, 4, 2, 1), nn.InstanceNorm2d(128), nn.ReLU(inplace=True),
+            nn.ConvTranspose2d(128, 64, 4, 2, 1), nn.InstanceNorm2d(64), nn.ReLU(inplace=True),
+            nn.Conv2d(64, out_channels, 7, 1, 3, padding_mode='reflect'), nn.Tanh()
         ])
-        
         self.decoder = nn.ModuleList(decoder_blocks)
 
     def forward(self, content_image, style_code):
         content_features = self.content_encoder(content_image)
         x = content_features
-
-        skip_features = None
-        if self.skip_connection:
-            skip_features = self.skip_conv(content_image)
-
-        # Process all layers except the last one (Tanh)
-        for layer in self.decoder[:-1]:
-            if isinstance(layer, (ResidualBlockWithAdaIN, StyleInjectionBlock)):
-                x = layer(x, style_code)
-            else:
-                x = layer(x)
-
-        # Apply skip connection before final activation
-        if self.skip_connection and skip_features is not None:
-            x = x + self.skip_alpha * skip_features
-        
-        # Final activation Tanh
-        x = self.decoder[-1](x)
-        
+        for layer in self.decoder:
+            # Apply style code only to the AdaIN residual blocks
+            x = layer(x, style_code) if isinstance(layer, ResidualBlockWithAdaIN) else layer(x)
         return x
 
 

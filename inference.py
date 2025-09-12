@@ -227,7 +227,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='StyleCycleGAN Inference with advanced style sampling')
     # --- StyleCycleGAN Parameters ---
     parser.add_argument('--input_dir', type=str, default=default_config.INFERENCE_INPUT_DIR)
-    parser.add_argument('--target_domain_dir', type=str, default=default_config.TARGET_DIR)
+    parser.add_argument('--target_domain_dir', type=str, default=default_config.INFERENCE_TARGET_DIR)
     parser.add_argument('--output_dir', type=str, default=default_config.INFERENCE_OUTPUT_DIR)
     parser.add_argument('--checkpoint_dir', type=str, default=default_config.INFERENCE_CHECKPOINT_DIR)
     parser.add_argument('--direction', type=str, choices=['AtoB', 'BtoA'], default=default_config.INFERENCE_DIRECTION)
@@ -236,7 +236,7 @@ if __name__ == "__main__":
     parser.add_argument('--use_ema', type=lambda x: (str(x).lower() == 'true'), default=True)
     
     # --- Style Mode Selection ---
-    parser.add_argument('--style_mode', type=str, default='average',
+    parser.add_argument('--style_mode', type=str, default=default_config.INFERENCE_STYLE_MODE,
                         choices=['average', 'random', 'interpolate', 'noise', 'vae'],
                         help='Style generation mode for inference.')
     parser.add_argument('--noise_level', type=float, default=0.1, help="Noise level for the 'noise' style mode.")

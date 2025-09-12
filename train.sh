@@ -180,7 +180,6 @@ python ./stylecyclegan/main.py \
   --lr_g $EXP8_LR_G \
   --lr_d $EXP8_LR_D \
   --loss_weights "$EXP8_WEIGHTS" \
-  --skip_connection True \
   --wandb
 
 echo "--- Experiment 8 Finished ---"
