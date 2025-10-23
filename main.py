@@ -9,7 +9,7 @@ import wandb
 # Import default configurations and modules from our new files
 import config as default_config
 from dataset import StyleTransferDataset
-from trainer import StyleCycleGAN, train_style_cyclegan
+from trainer import SICycleGAN, train
 
 
 def main(cfg):
@@ -21,7 +21,7 @@ def main(cfg):
         # Sanitize config dictionary for W&B
         config_dict = {key: value for key, value in vars(cfg).items() if not key.startswith('__')}
         wandb.init(
-            project="Style-Injected CycleGAN", # You can change this project name
+            project="Style-Injected CycleGAN for AlanKung", # You can change this project name
             name=cfg.EXPERIMENT_NAME,
             config=config_dict
         )
@@ -45,7 +45,7 @@ def main(cfg):
     dataset = StyleTransferDataset(cfg.source_dir, cfg.target_dir, cfg.image_size)
     
     # --- Model and Trainer Initialization ---
-    model = StyleCycleGAN(
+    model = SICycleGAN(
         device=device, 
         total_epochs=cfg.epochs,
         lr_g=cfg.lr_g,
@@ -63,7 +63,7 @@ def main(cfg):
     # --- Start Training ---
     print("Starting training...")
     try:
-        train_style_cyclegan(model, dataset, cfg, start_epoch=start_epoch)
+        train(model, dataset, cfg, start_epoch=start_epoch)
     except Exception as e:
         print(f"An error occurred during training: {e}")
     finally:
@@ -75,7 +75,7 @@ def main(cfg):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train StyleCycleGAN with custom configurations.")
+    parser = argparse.ArgumentParser(description="Train SI-CycleGAN with custom configurations.")
     
     # --- Path Arguments ---
     parser.add_argument('--source_dir', type=str, default=default_config.SOURCE_DIR)

@@ -32,7 +32,7 @@ class AdaIN(nn.Module):
         # Apply the style modulation
         return gamma * normalized_content + beta
 
-class ResidualBlockWithAdaIN(nn.Module):
+class AdaINResBlk(nn.Module):
     """
     A residual block that incorporates AdaIN layers.
     This allows the style to be injected at multiple points in the generator.
@@ -75,7 +75,7 @@ class StyleEncoder(nn.Module):
         return self.net(img)
 
 
-class StyleCycleGANGenerator(nn.Module):
+class Generator(nn.Module):
     """
     The main generator network for StyleCycleGAN.
     It separates content and style, encoding the content and then injecting
@@ -91,7 +91,7 @@ class StyleCycleGANGenerator(nn.Module):
         )
         
         # Decoder: Synthesizes an image from content features and a style code
-        decoder_blocks = [ResidualBlockWithAdaIN(256, style_dim) for _ in range(n_residual_blocks)]
+        decoder_blocks = [AdaINResBlk(256, style_dim) for _ in range(n_residual_blocks)]
         decoder_blocks.extend([
             nn.ConvTranspose2d(256, 128, 4, 2, 1), nn.InstanceNorm2d(128), nn.ReLU(inplace=True),
             nn.ConvTranspose2d(128, 64, 4, 2, 1), nn.InstanceNorm2d(64), nn.ReLU(inplace=True),
@@ -104,11 +104,11 @@ class StyleCycleGANGenerator(nn.Module):
         x = content_features
         for layer in self.decoder:
             # Apply style code only to the AdaIN residual blocks
-            x = layer(x, style_code) if isinstance(layer, ResidualBlockWithAdaIN) else layer(x)
+            x = layer(x, style_code) if isinstance(layer, AdaINResBlk) else layer(x)
         return x
 
 
-class ImprovedDiscriminator(nn.Module):
+class Discriminator(nn.Module):
     """
     A PatchGAN-style discriminator.
     It classifies whether image patches are real or fake, providing a more

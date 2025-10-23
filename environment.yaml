@@ -233,6 +233,7 @@ dependencies:
       - smmap==5.0.2
       - sympy==1.13.1
       - torchmetrics==1.7.3
+      - torch-fidelity
       - typing-inspection==0.4.1
       - wandb==0.21.0
 prefix: /opt/conda/envs/style_plant

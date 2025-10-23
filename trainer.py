@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 import wandb
 
 # Import from our new modules
-from model import StyleCycleGANGenerator, StyleEncoder, ImprovedDiscriminator
+from model import Generator, StyleEncoder, Discriminator
 from losses import VGGStyleContentLoss
 from utils import EMA, DynamicWeightScheduler, save_sample_grid
 
-class StyleCycleGAN:
+class SICycleGAN:
     """
     The main trainer class for StyleCycleGAN.
     This class brings together the models, optimizers, and loss functions
@@ -26,12 +26,12 @@ class StyleCycleGAN:
         self.device = device
 
         # --- Instantiate Models ---
-        self.G_A2B = StyleCycleGANGenerator().to(device)
-        self.G_B2A = StyleCycleGANGenerator().to(device)
+        self.G_A2B = Generator().to(device)
+        self.G_B2A = Generator().to(device)
         self.SE_A = StyleEncoder().to(device)
         self.SE_B = StyleEncoder().to(device)
-        self.D_A = ImprovedDiscriminator().to(device)
-        self.D_B = ImprovedDiscriminator().to(device)
+        self.D_A = Discriminator().to(device)
+        self.D_B = Discriminator().to(device)
 
         # --- Instantiate EMA Models for Inference ---
         self.ema = EMA(beta=0.995)
@@ -186,7 +186,7 @@ class StyleCycleGAN:
         plt.savefig(save_path, dpi=300); plt.close()
 
 
-def train_style_cyclegan(model, dataset, cfg, start_epoch=0):
+def train(model, dataset, cfg, start_epoch=0):
     """
     The main training loop.
     """
