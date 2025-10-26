@@ -10,7 +10,7 @@ BATCH_SIZE=4
 # ========================= EXPERIMENT 1 ==========================
 echo "--- Preparing Experiment 1: ---"
 
-EXP1_NAME="exp1_lrg2e4_lrd1e4_gan1_cycle10_identity5_style1_content1"
+EXP1_NAME="base_experiment"
 EXP1_LR_G=2e-4
 EXP1_LR_D=1e-4
 EXP1_WEIGHTS='{"gan": 1.0, "cycle": 10.0, "identity": 5.0, "style": 1.0, "content": 1.0}'

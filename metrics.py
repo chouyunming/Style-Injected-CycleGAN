@@ -68,13 +68,11 @@ def calculate_metrics(folder_dir, target_dir, device):
         # Initialize metrics
         fid_metric = FrechetInceptionDistance(normalize=True).to(device)
         
-        # 計算適當的 subset_size（取兩個數據集中較小的size的一半）
         min_samples = min(len(folder_dataset), len(target_dataset))
-        subset_size = max(min(50, min_samples // 2), 2)  # 至少2張，最多50張
+        subset_size = max(min(50, min_samples // 2), 2)
         print(f"Using KID subset_size of {subset_size} (total samples: {len(folder_dataset)}/{len(target_dataset)})")
         kid_metric = KernelInceptionDistance(normalize=True, subset_size=subset_size).to(device)
         
-        # === MODIFICATION START: Use batch-wise updates for memory efficiency ===
         print("Processing generated images...")
         for batch in tqdm(folder_loader, desc="Generated images"):
             images = batch.to(device)
@@ -90,7 +88,6 @@ def calculate_metrics(folder_dir, target_dir, device):
         print("Calculating final scores...")
         fid_score = float(fid_metric.compute())
         kid_mean, _ = kid_metric.compute()
-        # === MODIFICATION END ===
         
         return {
             'FID': fid_score,
@@ -146,7 +143,6 @@ def main():
     best_folder_fid = None
     best_folder_kid = None
     
-    # === MODIFICATION START: Removed sorting of results ===
     # Iterate through results without sorting the folder names
     for folder in results.keys():
         metrics = results[folder]
@@ -161,7 +157,6 @@ def main():
         if metrics['KID'] < best_kid:
             best_kid = metrics['KID']
             best_folder_kid = folder
-    # === MODIFICATION END ===
     
     if best_folder_fid is not None:
         output_text.append("\nBest performing folders:")
