@@ -34,5 +34,66 @@ master thesis
   - 透過比較 VGG-19 網路中間層的特徵表示，在風格轉換過程中保留語意內容資訊。
 
 ## 安裝設置
+> 開發環境：pytorch2.7.1-cuda12.6-cudnn8-devel
+
+步驟：
+1. 在終端機輸入
+   ```sh
+   git clone https://github.com/chouyunming/Style-Injected-CycleGAN.git
+   ```
+   完成後會出現 `Style-Injected-CycleGAN` 專案目錄
+2. 進入專案目錄
+   ```sh
+   cd Style-Injected-CycleGAN
+   ```
+3. 安裝虛擬環境 （需先安裝 conda）
+   ```sh
+   conda env create -f environment.yaml
+   ``` 
+4. 啟動虛擬環境
+   ```sh
+   conda activate style_plant
+   ```
+
 ## 訓練方式
+步驟：
+1. 將 config.py 內的 `SOURCE_DIR` 和 `TARGET_DIR` 更換為自己的訓練集路徑，其餘參數設定皆可於 config.py 直接修改
+2. 在終端機輸入
+   ```sh
+   python main.py
+   ```
+3. 若欲批次執行訓練可修改 train.sh 內的設定，並在終端機輸入
+   ```sh
+   ./train.sh
+   ```   
+
 ## 推理方式
+步驟：
+1. 將 config.py 內的 `INFERENCE_INPUT_DIR` 更換成欲轉換的健康葉片；`INFERENCE_TARGET_DIR` 更換為欲轉換的目標風格葉片
+2. 將 config.py 內的 `INFERENCE_STYLE_MODE` 設置為欲使用的風格採樣模式
+3. 將 config.py 內的 `INFERENCE_CHECKPOINT_DIR` 更換為欲推論的權重路徑
+4. 將 config.py 內的 `INFERENCE_OUTPUT_DIR` 更換為欲保存推論結果的路徑
+5. 在終端機輸入
+   ```sh
+   python inference.py
+   ```
+
+## 指標計算方式
+步驟：
+1. 將 config.py 內的 `METRICS_INPUT_DIR` 更換為欲計算指標的推論結果保存路徑
+2. 將 config.py 內的 `METRICS_TARGET_DIR` 更換為推論結果欲計算的目標資料集路徑（預設為目標風格類別原始資料集）
+3. 在終端機輸入
+   ```sh
+   python metrics.py
+   ```
+4. 指標計算結果會保存至 `METRICS_INPUT_DIR` 路徑中
+
+## 實驗結果
+1. 與基線模型的比較結果
+<img src="images/Comparison of Image Quality Performance of Different Methods.png">
+
+2. 不同風格採樣模式的結果
+<img src="images/Comparison of Image Quality Performance of Different Style Sampler Modes.png">
+
+## 風格轉換結果可視化
+<img src="images/t-SNE.png">
