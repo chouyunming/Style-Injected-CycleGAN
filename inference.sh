@@ -16,15 +16,7 @@ IMAGE_SIZE=256
 USE_EMA=true
 
 # --- Define the domains to process ---
-DOMAINS=(
-    "Tomato__Tomato_mosaic_virus"
-    "Tomato__Tomato_YellowLeaf__Curl_Virus"
-    "Tomato_Early_blight"
-    "Tomato_Late_blight"
-    "Tomato_Leaf_Mold"
-    "Tomato_Septoria_leaf_spot"
-    "Tomato_Spider_mites_Two_spotted_spider_mite"
-)
+DOMAINS=("Tomato_Bacterial_spot")
 
 # --- Define the single style mode to run ---
 # Available options: average, random, interpolate, noise, vae
@@ -72,7 +64,7 @@ for domain_name in "${DOMAINS[@]}"; do
         echo " -> Output Directory: $output_dir"
         
         # Construct and execute the python command
-        CMD="python3 ./stylecyclegan/inference.py \
+        CMD="python3 ./inference.py \
             --input_dir \"$CONTENT_INPUT_DIR\" \
             --target_domain_dir \"$TARGET_DOMAIN_DIR\" \
             --output_dir \"$output_dir\" \

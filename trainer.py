@@ -18,7 +18,7 @@ from utils import EMA, DynamicWeightScheduler, save_sample_grid
 
 class SICycleGAN:
     """
-    The main trainer class for StyleCycleGAN.
+    The main trainer class for SI-CycleGAN.
     This class brings together the models, optimizers, and loss functions
     and defines the core training step and model saving/loading logic.
     """

@@ -9,7 +9,7 @@ from tqdm import tqdm
 import glob
 import random
 import re
-from trainer import StyleCycleGAN
+from trainer import SICycleGAN
 import config as default_config
 
 import warnings
@@ -146,10 +146,10 @@ def main(args):
     print(f"Using device: {device}")
 
     # --- Load StyleCycleGAN model ---
-    print("Building StyleCycleGAN model architecture...")
-    model = StyleCycleGAN(device=device, total_epochs=1, lr_g=0, lr_d=0, loss_weights={})
+    print("Building SI-CycleGAN model architecture...")
+    model = SICycleGAN(device=device, total_epochs=1, lr_g=0, lr_d=0, loss_weights={})
     model.load_models(args.checkpoint_dir)
-    print("StyleCycleGAN model weights loaded successfully.")
+    print("SI-CycleGAN model weights loaded successfully.")
 
     # --- Prepare style source based on style_mode ---
     vae_model = None
@@ -225,7 +225,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='StyleCycleGAN Inference with advanced style sampling')
-    # --- StyleCycleGAN Parameters ---
+    # --- SI-CycleGAN Parameters ---
     parser.add_argument('--input_dir', type=str, default=default_config.INFERENCE_INPUT_DIR)
     parser.add_argument('--target_domain_dir', type=str, default=default_config.INFERENCE_TARGET_DIR)
     parser.add_argument('--output_dir', type=str, default=default_config.INFERENCE_OUTPUT_DIR)
